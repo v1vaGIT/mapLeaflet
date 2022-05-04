@@ -21,24 +21,34 @@ const Button4 = document.createElement("button");
 Button4.type = "button";
 Button4.innerText = "Все ВУЗы";
 Button4.addEventListener("click", function(e) {
-    coordinates.forEach(function (coords) {
-        const marker = L.marker(coords.coords)
-          .addTo(map)
-          .on("mousemove", function (e) {
-            marker.bindPopup(coords.label).openPopup();
-          })
-          .on("mouseout", function (e) {
-            marker.bindPopup(coords.label).closePopup();
-          });
-          map_markers.push(marker)
-      });
+    // coordinates.forEach(function (coords) {
+    //     const marker = L.marker(coords.coords)
+    //       .addTo(map)
+    //       .on("mousemove", function (e) {
+    //         marker.bindPopup(coords.label).openPopup();
+    //       })
+    //       .on("mouseout", function (e) {
+    //         marker.bindPopup(coords.label).closePopup();
+    //       });
+    //       map_markers.push(marker)
+    //   });
+    map_polygons.map(i => {
+      map.removeLayer(i)
+    })
+
     polygons.forEach(function (bounds) {
-        const area = L.polygon(bounds.bounds, {
-          color: bounds.color,
-          weight: bounds.weight,
-        }).addTo(map);
-        map_polygons.push(area)
+      const area = L.polygon(bounds.bounds, {
+        color: bounds.color,
+        weight: bounds.weight,
+      }).addTo(map)
+      .on("mousemove", function (e) {
+        area.bindPopup(bounds.label).openPopup();
+      })
+      .on("mouseout", function (e) {
+        area.bindPopup(bounds.label).closePopup();
       });
+      map_polygons.push(area)
+    });
 } );
 
 formContainer.append(Button4,Button1, Button2, Button3);
@@ -50,9 +60,9 @@ function academyStatus(status) {
     map_polygons.map(i => {
         map.removeLayer(i)
     })
-    map_markers.map(i => {
-        map.removeLayer(i)
-    })
+    // map_markers.map(i => {
+    //     map.removeLayer(i)
+    // })
   
     map_polygons = [];
   
@@ -60,25 +70,31 @@ function academyStatus(status) {
       const area = L.polygon(bounds.bounds, {
         color: bounds.color,
         weight: bounds.weight,
-      }).addTo(map);
+      }).addTo(map)
+      .on("mousemove", function (e) {
+        area.bindPopup(bounds.label).openPopup();
+      })
+      .on("mouseout", function (e) {
+        area.bindPopup(bounds.label).closePopup();
+      });
       map_polygons.push(area)
     });
   
   
   
-    map_markers = [];
+    // map_markers = [];
   
-    coordinates.filter(i => i.status == status).forEach(function (coords) {
-      const marker = L.marker(coords.coords)
-        .addTo(map)
-        .on("mousemove", function (e) {
-          marker.bindPopup(coords.label).openPopup();
-        })
-        .on("mouseout", function (e) {
-          marker.bindPopup(coords.label).closePopup();
-        });
-        map_markers.push(marker)
-    });  
+    // coordinates.filter(i => i.status == status).forEach(function (coords) {
+    //   const marker = L.marker(coords.coords)
+    //     .addTo(map)
+    //     .on("mousemove", function (e) {
+    //       marker.bindPopup(coords.label).openPopup();
+    //     })
+    //     .on("mouseout", function (e) {
+    //       marker.bindPopup(coords.label).closePopup();
+    //     });
+    //     map_markers.push(marker)
+    // });  
 };
 
 
@@ -90,24 +106,24 @@ L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
 }).addTo(map);
 
 // markers
-const coordinates = [
-  { coords: [48.52720660409438, 135.05113899707794], label: "ХГУЭП", status: 'ok' },
-  { coords: [48.53090123856703, 135.0527858734131], label: "ТОГУ", status: 'ok' },
-  { coords: [48.49384322304583, 135.06194829940796], label: "ДВГУПС", status: 'good' },
-];
+// const coordinates = [
+//   { coords: [48.52720660409438, 135.05113899707794], label: "ХГУЭП", status: 'ok' },
+//   { coords: [48.53090123856703, 135.0527858734131], label: "ТОГУ", status: 'ok' },
+//   { coords: [48.49384322304583, 135.06194829940796], label: "ДВГУПС", status: 'good' },
+// ];
 
-let map_markers = [];
-coordinates.forEach(function (coords) {
-  const marker = L.marker(coords.coords)
-    .addTo(map)
-    .on("mousemove", function (e) {
-      marker.bindPopup(coords.label).openPopup();
-    })
-    .on("mouseout", function (e) {
-      marker.bindPopup(coords.label).closePopup();
-    });
-    map_markers.push(marker)
-});
+// let map_markers = [];
+// coordinates.forEach(function (coords) {
+//   const marker = L.marker(coords.coords)
+//     .addTo(map)
+//     .on("mousemove", function (e) {
+//       marker.bindPopup(coords.label).openPopup();
+//     })
+//     .on("mouseout", function (e) {
+//       marker.bindPopup(coords.label).closePopup();
+//     });
+//     map_markers.push(marker)
+// });
 
 // polygons
 const polygons = [
@@ -122,6 +138,7 @@ const polygons = [
     color: "#fffc00",
     weight: 1,
     status: "ok",
+    label: "ХГУЭП"
   },
   {
     bounds: [
@@ -134,6 +151,7 @@ const polygons = [
     color: "#fffc00",
     weight: 1,
     status: "ok",
+    label: "ТОГУ"
   },
   {
     bounds: [
@@ -146,6 +164,7 @@ const polygons = [
     color: "#00d600",
     weight: 1,
     status: "good",
+    label: "ДВГУПС"
   },
 ];
 
@@ -154,7 +173,13 @@ polygons.forEach(function (bounds) {
   const area = L.polygon(bounds.bounds, {
     color: bounds.color,
     weight: bounds.weight,
-  }).addTo(map);
+  }).addTo(map)
+  .on("mousemove", function (e) {
+    area.bindPopup(bounds.label).openPopup();
+  })
+  .on("mouseout", function (e) {
+    area.bindPopup(bounds.label).closePopup();
+  });
   map_polygons.push(area)
 });
 
