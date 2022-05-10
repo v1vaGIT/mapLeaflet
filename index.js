@@ -106,12 +106,12 @@ L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
 }).addTo(map);
 var drawnItems = new L.FeatureGroup();
 map.addLayer(drawnItems);
-var drawControl = new L.Control.Draw({
-    edit: {
-        featureGroup: drawnItems
-    }
-});
-map.addControl(drawControl);
+// var drawControl = new L.Control.Draw({
+//     edit: {
+//         featureGroup: drawnItems
+//     }
+// });
+
 
 
 // markers
