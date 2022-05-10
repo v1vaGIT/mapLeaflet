@@ -41,7 +41,7 @@ Button4.addEventListener("click", function(e) {
         color: bounds.color,
         weight: bounds.weight,
       }).addTo(map)
-      .on("mousemove", function (e) {
+      .on("mouseover", function (e) {
         area.bindPopup(bounds.label).openPopup();
       })
       .on("mouseout", function (e) {
@@ -71,7 +71,7 @@ function academyStatus(status) {
         color: bounds.color,
         weight: bounds.weight,
       }).addTo(map)
-      .on("mousemove", function (e) {
+      .on("mouseover", function (e) {
         area.bindPopup(bounds.label).openPopup();
       })
       .on("mouseout", function (e) {
@@ -99,11 +99,20 @@ function academyStatus(status) {
 
 
 //map
-const map = L.map("map").setView([48.51541039023157, 135.0571632385254], 13);
+var map = L.map("map", {drawControl: true}).setView([48.51541039023157, 135.0571632385254], 13);
 L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
   attribution:
     '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
 }).addTo(map);
+var drawnItems = new L.FeatureGroup();
+map.addLayer(drawnItems);
+var drawControl = new L.Control.Draw({
+    edit: {
+        featureGroup: drawnItems
+    }
+});
+map.addControl(drawControl);
+
 
 // markers
 // const coordinates = [
@@ -184,3 +193,4 @@ polygons.forEach(function (bounds) {
 });
 
 map.fitBounds(polygons);
+
