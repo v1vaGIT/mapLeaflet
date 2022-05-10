@@ -183,7 +183,7 @@ polygons.forEach(function (bounds) {
     color: bounds.color,
     weight: bounds.weight,
   }).addTo(map)
-  .on("mousemove", function (e) {
+  .on("mouseover", function (e) {
     area.bindPopup(bounds.label).openPopup();
   })
   .on("mouseout", function (e) {
