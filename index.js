@@ -21,17 +21,6 @@ const Button4 = document.createElement("button");
 Button4.type = "button";
 Button4.innerText = "Все ВУЗы";
 Button4.addEventListener("click", function(e) {
-    // coordinates.forEach(function (coords) {
-    //     const marker = L.marker(coords.coords)
-    //       .addTo(map)
-    //       .on("mousemove", function (e) {
-    //         marker.bindPopup(coords.label).openPopup();
-    //       })
-    //       .on("mouseout", function (e) {
-    //         marker.bindPopup(coords.label).closePopup();
-    //       });
-    //       map_markers.push(marker)
-    //   });
     map_polygons.map(i => {
       map.removeLayer(i)
     })
@@ -54,7 +43,6 @@ Button4.addEventListener("click", function(e) {
 formContainer.append(Button4,Button1, Button2, Button3);
 document.body.append(formContainer);
 
-// фильтр по условию
 function academyStatus(status) {
     //status.preventDefault();
     map_polygons.map(i => {
@@ -65,7 +53,6 @@ function academyStatus(status) {
     // })
   
     map_polygons = [];
-  
     polygons.filter(i => i.status == status).forEach(function (bounds) {
       const area = L.polygon(bounds.bounds, {
         color: bounds.color,
@@ -79,22 +66,6 @@ function academyStatus(status) {
       });
       map_polygons.push(area)
     });
-  
-  
-  
-    // map_markers = [];
-  
-    // coordinates.filter(i => i.status == status).forEach(function (coords) {
-    //   const marker = L.marker(coords.coords)
-    //     .addTo(map)
-    //     .on("mousemove", function (e) {
-    //       marker.bindPopup(coords.label).openPopup();
-    //     })
-    //     .on("mouseout", function (e) {
-    //       marker.bindPopup(coords.label).closePopup();
-    //     });
-    //     map_markers.push(marker)
-    // });  
 };
 
 
@@ -104,14 +75,53 @@ L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
   attribution:
     '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
 }).addTo(map);
-var drawnItems = new L.FeatureGroup();
-map.addLayer(drawnItems);
-// var drawControl = new L.Control.Draw({
-//     edit: {
-//         featureGroup: drawnItems
-//     }
-// });
 
+map.pm.addControls({
+  position: 'topleft',
+  drawCircle: false, 
+  drawRectangle: false,
+  drawPolyline: false,
+  drawCircleMarker: false,
+});
+
+
+let points = []
+map.on('pm:drawstart', ({ workingLayer }) => {
+  workingLayer.on('pm:vertexadded', e => {
+    points.push(e.latlng)
+  });
+});
+
+map.on('pm:drawend', (e) => {
+  polygons.forEach(pol => {
+    let count = 0;
+    pol.bounds.forEach(p => {
+      let is = isPointInsidePolygon(p, points)
+      if (is) {
+        count++
+      }
+    })
+    if (count === pol.bounds.length) {
+      alert(`в полигон входят: ${pol.label}`)
+    }
+  })
+});
+
+
+const isPointInsidePolygon = (point, vs) => {    
+  const x = point[0], y = point[1];
+  let inside = false;
+  for (let i = 0, j = vs.length - 1; i < vs.length; j = i++) {
+      let xi = vs[i].lat, yi = vs[i].lng;
+      let xj = vs[j].lat, yj = vs[j].lng
+      
+      let intersect = ((yi > y) != (yj > y))
+          && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+      if (intersect) inside = !inside;
+  }
+  
+  return inside;
+};
 
 
 // markers
@@ -138,7 +148,7 @@ map.addLayer(drawnItems);
 const polygons = [
   {
     bounds: [
-      [48.52673409774523, 135.0506615638733],
+      [48.52673409774523, 135.0506615638733], 
       [48.526744755831785, 135.05167007446286],
       [48.52761515866186, 135.0516539812088],
       [48.527572527034934, 135.05066692829132],
@@ -193,4 +203,3 @@ polygons.forEach(function (bounds) {
 });
 
 map.fitBounds(polygons);
-
