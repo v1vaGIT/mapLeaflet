@@ -105,6 +105,7 @@ map.on('pm:drawend', (e) => {
       alert(`в полигон входят: ${pol.label}`)
     }
   })
+  points.length=0;
 });
 
 
